@@ -7,6 +7,7 @@ const toDoList = {
   container : null,
 
 
+
   init (selector, container) {
     if (typeof selector === "string" || selector.trim() !== '') {
       this.selector = selector;
@@ -42,6 +43,7 @@ const toDoList = {
         const savedData = this.saveData(data);
 
        this.renderItem(savedData);
+       this.removeItem(savedData);
       })
 
     },
@@ -71,6 +73,8 @@ const toDoList = {
     let dataFromStore = localStorage.getItem(this.selector);
 
     if (!dataFromStore) {
+      data.id = 1;
+
       const array = [];
       array.push(data);
       localStorage.setItem(this.selector, JSON.stringify(array));
@@ -78,6 +82,8 @@ const toDoList = {
 
      if(dataFromStore){
        dataFromStore = JSON.parse(dataFromStore);
+       const lastToDoId = dataFromStore[dataFromStore.length - 1].id;
+       data.id = Number(lastToDoId) + 1;
        dataFromStore.push(data);
        localStorage.setItem(this.selector, JSON.stringify(dataFromStore));
 
@@ -91,6 +97,7 @@ const toDoList = {
 
     const wrapper = document.createElement('div');
     wrapper.classList.add('col-4');
+    wrapper.setAttribute('data-id', data.id);
     wrapper.innerHTML = `
  <div class="taskWrapper">
        <div class="taskHeading">${title}</div>
@@ -98,6 +105,29 @@ const toDoList = {
   </div>`;
 
     this.container.appendChild(wrapper);
+  },
+
+
+
+  removeItem (data) {
+
+      const item = document.querySelector(this.container);
+
+      item.addEventListener('click', event => {
+      const currentItem = event.target.closest('[data-id]');
+      const currentItemId = Number(currentItem.getAttribute('data-id'));
+
+      const filteredData = JSON
+        .parse(localStorage.getItem(data))
+        .filter(item => item.id !== currentItemId);
+
+      localStorage.setItem(data, JSON.stringify(filteredData));
+      currentItem.remove();
+
+      const index = allTodos.findIndex((item) => item.id === currentItemId);
+
+       allTodos.splice(index, 1);
+    })
   }
 
 
