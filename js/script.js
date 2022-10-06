@@ -12,7 +12,6 @@ const toDoList = {
     if (typeof selector === "string" || selector.trim() !== '') {
       this.selector = selector;
     }
-
     if (typeof container === 'string' || container.trim() !== '') {
       this.containerSelector = container;
     }
@@ -44,13 +43,13 @@ const toDoList = {
       const savedData = this.saveData(data);
 
       this.renderItem(savedData);
+      this.form.reset();
     })
 
   },
 
   getHTMLElement() {
-    const todoContainer = document.querySelector(this.containerSelector);
-    this.container = todoContainer;
+    this.container = document.querySelector(this.containerSelector);
 
     document.addEventListener('DOMContentLoaded', event => {
       event.preventDefault();
@@ -58,7 +57,7 @@ const toDoList = {
 
       const toDo = JSON.parse(localStorage.getItem(this.selector));
 
-      if (!toDo) return '121';
+      if (!toDo) return 'localStorage is empty';
 
       toDo.map(todoItem => {
         this.renderItem(todoItem);
@@ -98,18 +97,19 @@ const toDoList = {
     wrapper.classList.add('col-4');
     wrapper.setAttribute('data-id', data.id);
     wrapper.innerHTML = `<div class="taskWrapper">
-                                  <div class="taskHeading">${title} </div>
+                             <div class="taskHeading">${title}</div>
                                   <div class="taskDescription">${description}</div>
                                   <div class="taskSelect">
-                                  <label>Status:
-                                  <select>
-                                  <option>no-status</option>
-                                  <option>pending</option>
-                                  <option>сompleted</option>
-</select></label>
-</div>
-<button id="closer">Delete task</button>
-                              </div>`;
+                                    <label>Status:
+                                      <select>
+                                        <option>no-status</option>
+                                        <option>pending</option>
+                                        <option>сompleted</option>
+                                      </select>
+                                    </label>
+                                  </div>
+                                  <button class="closer">X</button>
+                             </div>`;
 
     this.container.appendChild(wrapper);
 
@@ -118,21 +118,23 @@ const toDoList = {
 
   removeItem() {
     const data = JSON.parse(localStorage.getItem(this.selector));
-    this.deleteBtn = document.getElementById('closer');
-    console.log(this.deleteBtn);
 
-      this.deleteBtn.addEventListener('click', event => {
-      const currentItem = event.target.closest('[data-id]');
-      const currentItemId = Number(currentItem.getAttribute('data-id'));
+      this.container.addEventListener('click', event => {
+        this.deleteBtn = document.querySelector('.closer');
+        if(event.target.className === this.deleteBtn.className){
+          const currentItem = event.target.closest('[data-id]');
+          const currentItemId = Number(currentItem.getAttribute('data-id'));
 
-      const filteredData = data.filter(item => item.id !== currentItemId);
+          const filteredData = data.filter(item => item.id !== currentItemId);
 
-      localStorage.setItem(this.selector, JSON.stringify(filteredData));
-      currentItem.remove();
+          localStorage.setItem(this.selector, JSON.stringify(filteredData));
+          currentItem.remove();
 
-      const index = data.findIndex((item) => item.id === currentItemId);
+          const index = data.findIndex((item) => item.id === currentItemId);
 
-      data.splice(index, 1);
+          data.splice(index, 1);
+        }
+
     })
   },
 

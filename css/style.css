@@ -4,6 +4,7 @@
     box-shadow: 0 0 14px 1px rgba(0, 0, 0, .2);
     padding: 20px;
     margin-bottom: 20px;
+    position: relative;
 }
 
 .taskHeading {
@@ -26,6 +27,17 @@ button{
   border-radius: 10%;
   padding: 5px 2px;
   cursor: pointer;
+}
+.closer{
+    border-radius: 50%;
+    padding: 5px 10px;
+    position: absolute;
+    display: block;
+    right: 10px;
+    top: 10px;
+    border: none;
+    color: #fff;
+    background: #000;
 }
 
 button:hover{
