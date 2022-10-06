@@ -1,54 +1,54 @@
 'use strict';
 
 const toDoList = {
-  selector : null,
-  form : null,
+  selector: null,
+  form: null,
   containerSelector: null,
-  container : null,
+  container: null,
+  deleteBtn: null,
 
 
-
-  init (selector, container) {
+  init(selector, container) {
     if (typeof selector === "string" || selector.trim() !== '') {
       this.selector = selector;
     }
 
-    if(typeof container === 'string' || container.trim() !== ''){
+    if (typeof container === 'string' || container.trim() !== '') {
       this.containerSelector = container;
     }
 
 
     this.getForm();
-    this.getHTMLElement()
+    this.getHTMLElement();
+    this.removeItem();
   },
 
-    getForm () {
+  getForm() {
 
-      const formElement = document.querySelector(this.selector);
-      this.form = formElement;
-
-
-      formElement.addEventListener('submit', event => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const data = {};
-
-        formElement.querySelectorAll('input, textarea')
-          .forEach((item) => {
-            data[item.name] = item.value;
-          })
+    const formElement = document.querySelector(this.selector);
+    this.form = formElement;
 
 
-        const savedData = this.saveData(data);
+    formElement.addEventListener('submit', event => {
+      event.preventDefault();
+      event.stopPropagation();
 
-       this.renderItem(savedData);
-       this.removeItem(savedData);
-      })
+      const data = {};
 
-    },
+      formElement.querySelectorAll('input, textarea')
+        .forEach((item) => {
+          data[item.name] = item.value;
+        })
 
-  getHTMLElement () {
+
+      const savedData = this.saveData(data);
+
+      this.renderItem(savedData);
+    })
+
+  },
+
+  getHTMLElement() {
     const todoContainer = document.querySelector(this.containerSelector);
     this.container = todoContainer;
 
@@ -69,7 +69,7 @@ const toDoList = {
   },
 
 
-  saveData (data) {
+  saveData(data) {
     let dataFromStore = localStorage.getItem(this.selector);
 
     if (!dataFromStore) {
@@ -80,55 +80,61 @@ const toDoList = {
       localStorage.setItem(this.selector, JSON.stringify(array));
     }
 
-     if(dataFromStore){
-       dataFromStore = JSON.parse(dataFromStore);
-       const lastToDoId = dataFromStore[dataFromStore.length - 1].id;
-       data.id = Number(lastToDoId) + 1;
-       dataFromStore.push(data);
-       localStorage.setItem(this.selector, JSON.stringify(dataFromStore));
+    if (dataFromStore) {
+      dataFromStore = JSON.parse(dataFromStore);
+      const lastToDoId = dataFromStore[dataFromStore.length - 1].id;
+      data.id = Number(lastToDoId) + 1;
+      dataFromStore.push(data);
+      localStorage.setItem(this.selector, JSON.stringify(dataFromStore));
 
-     }
-     return data;
-     },
+    }
+    return data;
+  },
 
-  renderItem (data) {
+  renderItem(data) {
     const title = data.title;
     const description = data.description;
-
     const wrapper = document.createElement('div');
     wrapper.classList.add('col-4');
     wrapper.setAttribute('data-id', data.id);
-    wrapper.innerHTML = `
- <div class="taskWrapper">
-       <div class="taskHeading">${title}</div>
-      <div class="taskDescription">${description}</div>
-  </div>`;
+    wrapper.innerHTML = `<div class="taskWrapper">
+                                  <div class="taskHeading">${title} </div>
+                                  <div class="taskDescription">${description}</div>
+                                  <div class="taskSelect">
+                                  <label>Status:
+                                  <select>
+                                  <option>no-status</option>
+                                  <option>pending</option>
+                                  <option>сompleted</option>
+</select></label>
+</div>
+<button id="closer">Delete task</button>
+                              </div>`;
 
     this.container.appendChild(wrapper);
+
   },
 
 
+  removeItem() {
+    const data = JSON.parse(localStorage.getItem(this.selector));
+    this.deleteBtn = document.getElementById('closer');
+    console.log(this.deleteBtn);
 
-  removeItem (data) {
-
-      const item = document.querySelector(this.container);
-
-      item.addEventListener('click', event => {
+      this.deleteBtn.addEventListener('click', event => {
       const currentItem = event.target.closest('[data-id]');
       const currentItemId = Number(currentItem.getAttribute('data-id'));
 
-      const filteredData = JSON
-        .parse(localStorage.getItem(data))
-        .filter(item => item.id !== currentItemId);
+      const filteredData = data.filter(item => item.id !== currentItemId);
 
-      localStorage.setItem(data, JSON.stringify(filteredData));
+      localStorage.setItem(this.selector, JSON.stringify(filteredData));
       currentItem.remove();
 
-      const index = allTodos.findIndex((item) => item.id === currentItemId);
+      const index = data.findIndex((item) => item.id === currentItemId);
 
-       allTodos.splice(index, 1);
+      data.splice(index, 1);
     })
-  }
+  },
 
 
 }

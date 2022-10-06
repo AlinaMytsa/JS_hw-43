@@ -9,9 +9,27 @@
 .taskHeading {
     font-size: 20px;
     margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .taskDescription {
     font-size: 16px;
 
 }
+
+.taskSelect{
+  margin-bottom: 10px;
+}
+
+button{
+  border-radius: 10%;
+  padding: 5px 2px;
+  cursor: pointer;
+}
+
+button:hover{
+
+}
+
+
