@@ -100,15 +100,10 @@ const toDoList = {
                              <div class="taskHeading">${title}</div>
                                   <div class="taskDescription">${description}</div>
                                   <div class="taskSelect">
-                                    <label>Status:
-                                      <select>
-                                        <option>no-status</option>
-                                        <option>pending</option>
-                                        <option>сompleted</option>
-                                      </select>
-                                    </label>
+     </div>
+                                  <button id="closer">Delete task</button>
+
                                   </div>
-                                  <button class="closer">X</button>
                              </div>`;
 
     this.container.appendChild(wrapper);
@@ -119,21 +114,21 @@ const toDoList = {
   removeItem() {
     const data = JSON.parse(localStorage.getItem(this.selector));
 
-      this.container.addEventListener('click', event => {
-        this.deleteBtn = document.querySelector('.closer');
-        if(event.target.className === this.deleteBtn.className){
-          const currentItem = event.target.closest('[data-id]');
-          const currentItemId = Number(currentItem.getAttribute('data-id'));
+    this.container.addEventListener('click', event => {
+      this.deleteBtn = document.querySelector('#closer');
+      if(event.target.className === this.deleteBtn.className){
+        const currentItem = event.target.closest('[data-id]');
+        const currentItemId = Number(currentItem.getAttribute('data-id'));
 
-          const filteredData = data.filter(item => item.id !== currentItemId);
+        const filteredData = data.filter(item => item.id !== currentItemId);
 
-          localStorage.setItem(this.selector, JSON.stringify(filteredData));
-          currentItem.remove();
+        localStorage.setItem(this.selector, JSON.stringify(filteredData));
+        currentItem.remove();
 
-          const index = data.findIndex((item) => item.id === currentItemId);
+        const index = data.findIndex((item) => item.id === currentItemId);
 
-          data.splice(index, 1);
-        }
+        data.splice(index, 1);
+      }
 
     })
   },
